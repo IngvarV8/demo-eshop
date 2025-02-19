@@ -1,0 +1,6 @@
+.env
+frontend
+db/data
+frontend/node_modules
+backend/node_modules
+backend/compiled
