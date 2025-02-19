@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: db_container
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -20,5 +20,14 @@ services:
     ports:
       - "8080:8080"
 
-#  server_api:
-#    container_name: server_api 
+  server_api:
+    container_name: server_api 
+    build: ./backend
+    environment:
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+    ports:
+      - "3000:3000"
