@@ -6,6 +6,7 @@ CREATE TABLE items (
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
+    email VARCHAR(50) NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
