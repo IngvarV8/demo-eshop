@@ -35,14 +35,14 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 /**
  * @swagger
- * /items:
+ * /get-items:
  *   get:
  *     summary: Get list of items
  *     responses:
  *       200:
  *         description: A list of items
  */
-app.get("/items", async (req: Request, res: Response) => {
+app.get("/get-items", async (req: Request, res: Response) => {
   await getItems(req, res);
 });
 

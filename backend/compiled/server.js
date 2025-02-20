@@ -44,14 +44,14 @@ const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions);
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 /**
  * @swagger
- * /items:
+ * /get-items:
  *   get:
  *     summary: Get list of items
  *     responses:
  *       200:
  *         description: A list of items
  */
-app.get("/items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/get-items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getItems(req, res);
 }));
 /**
@@ -133,7 +133,6 @@ function createOrder(req, res) {
             if (!verifyEmail(email)) {
                 return res.status(400).json({ error: "Invalid email" });
             }
-            // validate items
             if (!Array.isArray(items) || items.length === 0) {
                 return res.status(400).json({ error: "Invalid items entered" });
             }
