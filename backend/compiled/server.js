@@ -13,29 +13,104 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const pg_1 = require("pg");
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 const pool = new pg_1.Pool({
-    user: "user",
-    host: "postgres", // Docker service name
-    database: "eshop_db",
-    password: "password",
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT),
 });
-// Get list of items
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "E-Shop API",
+            version: "1.0.0",
+            description: "API for managing items and orders",
+        },
+    },
+    apis: ["./compiled/server.js"],
+};
+const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions);
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
+/**
+ * @swagger
+ * /items:
+ *   get:
+ *     summary: Get list of items
+ *     responses:
+ *       200:
+ *         description: A list of items
+ */
 app.get("/items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getItems(req, res);
 }));
-// Create new order
+/**
+ * @swagger
+ * /new-order:
+ *   post:
+ *     summary: Create a new order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     quantity:
+ *                       type: integer
+ *     responses:
+ *       201:
+ *         description: Order created successfully
+ */
 app.post("/new-order", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield createOrder(req, res);
 }));
-// Delete order by id
+/**
+ * @swagger
+ * /delete-order/{id}:
+ *   delete:
+ *     summary: Delete an order by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Order deleted successfully
+ *       400:
+ *         description: Order not found
+ */
 app.delete("/delete-order/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield deleteOrder(req, res);
 }));
-// Get list of orders
+/**
+ * @swagger
+ * /get-order-list:
+ *   get:
+ *     summary: Get list of orders
+ *     responses:
+ *       200:
+ *         description: A list of orders
+ */
 app.get("/get-order-list", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getOrders(req, res);
 }));

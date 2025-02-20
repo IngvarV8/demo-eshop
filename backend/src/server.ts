@@ -1,36 +1,115 @@
-import express, { Request, Response } from "express";
-import { Pool } from "pg";
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-  user: "user",
-  host: "postgres", // Docker service name
-  database: "eshop_db",
-  password: "password",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: Number(process.env.DB_PORT),
 });
 
-// Get list of items
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "E-Shop API",
+            version: "1.0.0",
+            description: "API for managing items and orders",
+        },
+    },
+    apis: ["./compiled/server.js"],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+/**
+ * @swagger
+ * /items:
+ *   get:
+ *     summary: Get list of items
+ *     responses:
+ *       200:
+ *         description: A list of items
+ */
 app.get("/items", async (req: Request, res: Response) => {
   await getItems(req, res);
 });
 
-// Create new order
+/**
+ * @swagger
+ * /new-order:
+ *   post:
+ *     summary: Create a new order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     quantity:
+ *                       type: integer
+ *     responses:
+ *       201:
+ *         description: Order created successfully
+ */
 app.post("/new-order", async (req: Request, res: Response) => {
   await createOrder(req, res);
 });
 
-// Delete order by id
+/**
+ * @swagger
+ * /delete-order/{id}:
+ *   delete:
+ *     summary: Delete an order by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Order deleted successfully
+ *       400:
+ *         description: Order not found
+ */
 app.delete("/delete-order/:id", async (req: Request, res: Response) => {
   await deleteOrder(req, res);
 });
 
-// Get list of orders
+/**
+ * @swagger
+ * /get-order-list:
+ *   get:
+ *     summary: Get list of orders
+ *     responses:
+ *       200:
+ *         description: A list of orders
+ */
 app.get("/get-order-list", async (req: Request, res: Response) => {
   await getOrders(req, res);
 });
+
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
