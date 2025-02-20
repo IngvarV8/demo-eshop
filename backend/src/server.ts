@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
