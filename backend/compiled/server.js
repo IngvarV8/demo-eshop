@@ -17,6 +17,8 @@ const cors_1 = __importDefault(require("cors"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const pg_1 = require("pg");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -78,6 +80,10 @@ app.get("/items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
  *     responses:
  *       201:
  *         description: Order created successfully
+ *       400:
+ *         description: Invalid request format or insufficient stock
+ *       500:
+ *         description: Internal server error
  */
 app.post("/new-order", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield createOrder(req, res);
@@ -98,6 +104,8 @@ app.post("/new-order", (req, res) => __awaiter(void 0, void 0, void 0, function*
  *         description: Order deleted successfully
  *       400:
  *         description: Order not found
+ *       500:
+ *         description: Internal server error
  */
 app.delete("/delete-order/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield deleteOrder(req, res);
