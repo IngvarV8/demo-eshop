@@ -2,6 +2,7 @@
 2. docker-compose up --build
 
 App available at localhost:3000
+
 Api docs: localhost:3000/api-docs
 
 When made any change:
