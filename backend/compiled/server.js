@@ -130,9 +130,12 @@ function createOrder(req, res) {
         const client = yield pool.connect(); // Start a DB transaction
         try {
             const { email, items } = req.body;
-            // validate
-            if (!email || !Array.isArray(items) || items.length === 0) {
-                return res.status(400).json({ error: "Invalid request format" });
+            if (!verifyEmail(email)) {
+                return res.status(400).json({ error: "Invalid email" });
+            }
+            // validate items
+            if (!Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({ error: "Invalid items entered" });
             }
             // check if items are in stock
             for (const item of items) {
@@ -220,4 +223,8 @@ function deleteOrder(req, res) {
             client.release();
         }
     });
+}
+function verifyEmail(email) {
+    const emailRegex = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+    return (!email || !emailRegex.test(email)) ? false : true;
 }

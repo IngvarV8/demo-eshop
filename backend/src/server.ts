@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import cors from 'cors';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -128,9 +128,12 @@ async function createOrder(req: Request, res: Response){
   try {
     const { email, items } = req.body;
 
-    // validate
-    if (!email || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Invalid request format" });
+    if(!verifyEmail(email)){
+      return res.status(400).json({ error: "Invalid email" });
+    }
+    
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "Invalid items entered" });
     }
 
     // check if items are in stock
@@ -228,4 +231,9 @@ async function deleteOrder(req: Request, res: Response): Promise<any> {
   } finally {
     client.release();
   }
+}
+
+function verifyEmail(email: string): boolean{
+  const emailRegex = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+  return (!email || !emailRegex.test(email)) ? false : true;
 }
