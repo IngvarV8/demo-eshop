@@ -72,6 +72,10 @@ app.get("/items", async (req: Request, res: Response) => {
  *     responses:
  *       201:
  *         description: Order created successfully
+ *       400:
+ *         description: Invalid request format or insufficient stock
+ *       500:
+ *         description: Internal server error
  */
 app.post("/new-order", async (req: Request, res: Response) => {
   await createOrder(req, res);
@@ -93,6 +97,8 @@ app.post("/new-order", async (req: Request, res: Response) => {
  *         description: Order deleted successfully
  *       400:
  *         description: Order not found
+ *       500:
+ *         description: Internal server error
  */
 app.delete("/delete-order/:id", async (req: Request, res: Response) => {
   await deleteOrder(req, res);
