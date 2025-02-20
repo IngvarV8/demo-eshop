@@ -112,14 +112,14 @@ app.delete("/delete-order/:id", (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 /**
  * @swagger
- * /get-order-list:
+ * /get-orders:
  *   get:
  *     summary: Get list of orders
  *     responses:
  *       200:
  *         description: A list of orders
  */
-app.get("/get-order-list", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/get-orders", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getOrders(req, res);
 }));
 app.listen(3000, () => {

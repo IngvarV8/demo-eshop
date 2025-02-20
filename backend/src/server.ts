@@ -106,14 +106,14 @@ app.delete("/delete-order/:id", async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /get-order-list:
+ * /get-orders:
  *   get:
  *     summary: Get list of orders
  *     responses:
  *       200:
  *         description: A list of orders
  */
-app.get("/get-order-list", async (req: Request, res: Response) => {
+app.get("/get-orders", async (req: Request, res: Response) => {
   await getOrders(req, res);
 });
 
