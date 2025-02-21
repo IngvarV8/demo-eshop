@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Button, Typography } from "@mui/material";
+import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,19 +7,17 @@ const Navbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Demo E-shop
-        </Typography>
-
-        <Button color="inherit" onClick={() => navigate("/")}>
-          Inventory
-        </Button>
-        <Button color="inherit" onClick={() => navigate("/cart")}>
-          My cart
-        </Button>
-        <Button color="inherit" onClick={() => navigate("/orders")}>
-          My orders
-        </Button>
+        <Box sx={{ display: "flex", justifyContent: "space-evenly", width: "100%" }}>
+          <Button color="inherit" onClick={() => navigate("/")}>
+            Inventory
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/cart")}>
+            Cart
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/orders")}>
+            Orders
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );

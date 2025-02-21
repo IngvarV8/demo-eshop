@@ -89,18 +89,20 @@ const ShopInventory = () => {
 
     return (
         <div>
-            <Typography variant="h4" gutterBottom>
-                Shop Inventory
-            </Typography>
             <List>
                 {items.map((item) => (
                     <div key={item.id}>
                         <ListItem>
-                            <Grid2 container alignItems="center" justifyContent="space-between">
+                            <Grid2 container
+                                direction="column"
+                                sx={{
+                                    justifyContent: "space-evenly",
+                                    alignItems: "baseline",
+                                }}>
                                 <Grid2>
                                     <ListItemText primary={item.name} secondary={`Stock: ${item.quantity}`} />
                                 </Grid2>
-                                <Grid2>
+                                <Grid2 display="flex" justifyContent="flex-end">
                                     <Button
                                         variant="outlined"
                                         onClick={() => {

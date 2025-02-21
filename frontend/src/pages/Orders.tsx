@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { List, ListItem, ListItemText, Typography, Divider, Button, Grid2 } from "@mui/material";
 import axios from "axios";
 
@@ -51,16 +51,17 @@ const Orders = () => {
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
-        Orders
-      </Typography>
-
       <List>
         {orders.length > 0 ? (
           orders.map((order) => (
             <div key={order.order_id}>
               <ListItem>
-                <Grid2 container justifyContent="space-between">
+                <Grid2 container
+                  direction="column"
+                  sx={{
+                    justifyContent: "space-evenly",
+                    alignItems: "baseline",
+                  }}>
                   <Grid2>
                     <ListItemText
                       primary={`Order ID: ${order.order_id}`}
