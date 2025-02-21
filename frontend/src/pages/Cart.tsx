@@ -76,10 +76,6 @@ const Cart = () => {
 
     return (
         <div>
-            <Typography variant="h4" gutterBottom>
-                Cart
-            </Typography>
-
             <List>
                 {cartItems.length > 0 ? (
                     cartItems.map((item) => (
