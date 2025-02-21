@@ -8,7 +8,7 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
-          My App
+          Demo E-shop
         </Typography>
 
         <Button color="inherit" onClick={() => navigate("/")}>
