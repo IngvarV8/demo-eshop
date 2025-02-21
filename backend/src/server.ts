@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import cors from 'cors';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -35,14 +35,14 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 /**
  * @swagger
- * /items:
+ * /get-items:
  *   get:
  *     summary: Get list of items
  *     responses:
  *       200:
  *         description: A list of items
  */
-app.get("/items", async (req: Request, res: Response) => {
+app.get("/get-items", async (req: Request, res: Response) => {
   await getItems(req, res);
 });
 
@@ -106,14 +106,14 @@ app.delete("/delete-order/:id", async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /get-order-list:
+ * /get-orders:
  *   get:
  *     summary: Get list of orders
  *     responses:
  *       200:
  *         description: A list of orders
  */
-app.get("/get-order-list", async (req: Request, res: Response) => {
+app.get("/get-orders", async (req: Request, res: Response) => {
   await getOrders(req, res);
 });
 
@@ -128,9 +128,12 @@ async function createOrder(req: Request, res: Response){
   try {
     const { email, items } = req.body;
 
-    // validate
-    if (!email || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Invalid request format" });
+    if(!verifyEmail(email)){
+      return res.status(400).json({ error: "Invalid email" });
+    }
+    
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "Invalid items entered" });
     }
 
     // check if items are in stock
@@ -192,7 +195,22 @@ async function getItems(req: Request, res: Response): Promise<any> {
 
 async function getOrders(req: Request, res: Response): Promise<any> {
   try {
-    const result = await pool.query("SELECT * FROM orders;");
+    // Perform a JOIN query to get orders along with purchased items and quantities
+    const result = await pool.query(`
+      SELECT orders.id AS order_id, orders.email, orders.order_date, 
+             json_agg(
+               json_build_object(
+                 'item_name', items.name,
+                 'item_quantity', order_items.quantity
+               )
+             ) AS items
+      FROM orders
+      JOIN order_items ON orders.id = order_items.order_id
+      JOIN items ON items.id = order_items.item_id
+      GROUP BY orders.id;
+    `);
+
+    // Return the result as JSON
     res.json(result.rows);
   } catch (err) {
     console.error("Error fetching from db:", err);
@@ -228,4 +246,9 @@ async function deleteOrder(req: Request, res: Response): Promise<any> {
   } finally {
     client.release();
   }
+}
+
+function verifyEmail(email: string): boolean{
+  const emailRegex = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+  return (!email || !emailRegex.test(email)) ? false : true;
 }

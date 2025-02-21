@@ -44,14 +44,14 @@ const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions);
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 /**
  * @swagger
- * /items:
+ * /get-items:
  *   get:
  *     summary: Get list of items
  *     responses:
  *       200:
  *         description: A list of items
  */
-app.get("/items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/get-items", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getItems(req, res);
 }));
 /**
@@ -112,14 +112,14 @@ app.delete("/delete-order/:id", (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 /**
  * @swagger
- * /get-order-list:
+ * /get-orders:
  *   get:
  *     summary: Get list of orders
  *     responses:
  *       200:
  *         description: A list of orders
  */
-app.get("/get-order-list", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/get-orders", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield getOrders(req, res);
 }));
 app.listen(3000, () => {
@@ -130,9 +130,11 @@ function createOrder(req, res) {
         const client = yield pool.connect(); // Start a DB transaction
         try {
             const { email, items } = req.body;
-            // validate
-            if (!email || !Array.isArray(items) || items.length === 0) {
-                return res.status(400).json({ error: "Invalid request format" });
+            if (!verifyEmail(email)) {
+                return res.status(400).json({ error: "Invalid email" });
+            }
+            if (!Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({ error: "Invalid items entered" });
             }
             // check if items are in stock
             for (const item of items) {
@@ -181,7 +183,21 @@ function getItems(req, res) {
 function getOrders(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield pool.query("SELECT * FROM orders;");
+            // Perform a JOIN query to get orders along with purchased items and quantities
+            const result = yield pool.query(`
+      SELECT orders.id AS order_id, orders.email, orders.order_date, 
+             json_agg(
+               json_build_object(
+                 'item_name', items.name,
+                 'item_quantity', order_items.quantity
+               )
+             ) AS items
+      FROM orders
+      JOIN order_items ON orders.id = order_items.order_id
+      JOIN items ON items.id = order_items.item_id
+      GROUP BY orders.id;
+    `);
+            // Return the result as JSON
             res.json(result.rows);
         }
         catch (err) {
@@ -220,4 +236,8 @@ function deleteOrder(req, res) {
             client.release();
         }
     });
+}
+function verifyEmail(email) {
+    const emailRegex = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+    return (!email || !emailRegex.test(email)) ? false : true;
 }

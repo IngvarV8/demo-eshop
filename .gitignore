@@ -1,5 +1,7 @@
 .env
-frontend
 db/data
 frontend/node_modules
+frontend/src/context
+frontend/src/pages/Cartold.tsx
+frontend/src/pages/ShopInventoryold.tsx
 backend/node_modules
