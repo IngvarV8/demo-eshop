@@ -70,7 +70,14 @@ const Cart = () => {
             setCartItems([]);
             localStorage.removeItem("cartItems");
         } catch (err) {
-            setError("Failed to send order");
+            if (axios.isAxiosError(err) && err.response) {
+                const errorMessage = err.response.data?.error || "Failed to send order";
+                setError(errorMessage);
+                alert(errorMessage);
+            } else {
+                setError("Failed to send order");
+                alert("An unexpected error occurred");
+            }
         }
     };
 
